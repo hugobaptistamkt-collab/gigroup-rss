@@ -18,7 +18,7 @@ jobs:
         with:
           persist-credentials: true   # usa o GITHUB_TOKEN automaticamente
 
-      - name: Use Node.js 18
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 18
