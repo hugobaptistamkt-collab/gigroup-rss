@@ -1,33 +1,36 @@
 name: Generate RSS Feed
 
+permissions:
+  contents: write
+
 on:
   schedule:
-    - cron: "0 */1 * * *"
-  workflow_dispatch:    
-  push:
-    branches:
-      - main
+    - cron: "0 * * * *" # corre de hora a hora
+  workflow_dispatch:     # permite correr manualmente
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run scraper
-      run: python scrape.py
+      - name: Run builder script
+        run: node builder.js
 
-    - name: Upload feed.xml
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: "RSS updated automatically"
+      - name: Commit and push feed.xml
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add feed.xml
+          git commit -m "Update RSS feed" || echo "No changes to commit"
+          git push
