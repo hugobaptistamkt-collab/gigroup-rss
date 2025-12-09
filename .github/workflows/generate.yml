@@ -1,12 +1,12 @@
 name: Generate RSS Feed
 
 permissions:
-  contents: write
+  contents: write   # necessário para fazer push
 
 on:
   schedule:
-    - cron: "0 * * * *" # corre de hora a hora
-  workflow_dispatch:     # permite correr manualmente
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,23 +14,31 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true   # usa o GITHUB_TOKEN automaticamente
 
       - name: Use Node.js 18
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          ls -la
+          cat package.json
+          npm install
 
       - name: Run builder script
-        run: node builder.js
+        run: |
+          node builder.js
+          echo "builder.js terminou com sucesso"
 
       - name: Commit and push feed.xml
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add feed.xml
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git status
+          git add feed.xml || echo "feed.xml não encontrado"
           git commit -m "Update RSS feed" || echo "No changes to commit"
           git push
