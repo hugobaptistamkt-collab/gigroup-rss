@@ -2,8 +2,8 @@ name: Generate RSS Feed
 
 on:
   schedule:
-    - cron: "0 */12 * * *"  # Atualiza a cada 12 horas
-  workflow_dispatch:        # Permite executar manualmente
+    - cron: "0 */1 * * *"
+  workflow_dispatch:    
   push:
     branches:
       - main
